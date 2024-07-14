@@ -8,8 +8,7 @@ def get_random_user_agent():
     :recieves: None
     :return: Random user agent string.
     """
-    # TODO: change dir
-    user_agents = '/Users/arismac/Sync/win_mac_sync/dev/networker/user_agents.txt'
+    user_agents = 'user_agents.txt'
     with open(user_agents, encoding='utf8') as f:
       user_agents_list = [_.strip() for _ in f.readlines()]
     
