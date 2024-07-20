@@ -3,7 +3,7 @@ from telegram_scraper import TelegramScraper
 def main():
     scraper = TelegramScraper()
     channel_name = 'example_channel'
-    link_types = ['twitter.com', 'facebook.com']
+    link_types = ['x.com', 'facebook.com']
     time_filter = 7
     
     df = scraper.scrape_channel(channel_name, link_types=link_types, time_filter=time_filter)

@@ -1,3 +1,7 @@
+# Sensitive information
+chatgpt_api_key.txt
+rapid_api_key.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
