@@ -1,4 +1,5 @@
 import re
+import os
 from datetime import datetime, timedelta
 import pandas as pd
 import requests
@@ -135,3 +136,68 @@ class TelegramScraper:
         pattern = f'({link_type}/.*?)[\)\s\n\r\t<\\@\*\'\"\,]'
         found_links = re.findall(pattern, text + '  ')
         return [link.rstrip('\r\n\t@') for link in found_links]
+    
+    def recap_messages(self, messages, api_type='rapid'):
+        if api_type == 'rapid' and os.path.exists('rapid_api_key.txt'):
+            return self._recap_rapid_api(messages)
+        elif api_type == 'chatgpt' and os.path.exists('chatgpt_api_key.txt'):
+            return self._recap_chatgpt_api(messages)
+        else:
+            raise ValueError("Invalid API type or API key file not found.")
+
+    def _recap_rapid_api(self, messages):
+        with open('rapid_api_key.txt', 'r') as f:
+            api_key = f.read().strip()
+
+        url = "https://chatgpt-api8.p.rapidapi.com/"
+        payload = [
+            {
+                "content": "You're a helpful chatbot that summarizes Telegram channel messages.",
+                "role": "system"
+            },
+            {
+                "content": f"Please provide a concise recap of these Telegram channel messages: {messages}",
+                "role": "user"
+            }
+        ]
+        headers = {
+            "x-rapidapi-key": api_key,
+            "x-rapidapi-host": "chatgpt-api8.p.rapidapi.com",
+            "Content-Type": "application/json" 
+        }
+
+        response = requests.post(url, json=payload, headers=headers)
+        if response.status_code == 200:
+            return response.json()['text']
+        else:
+            raise Exception(f"API request failed with status code {response.status_code}")
+
+    def _recap_chatgpt_api(self, messages):
+        with open('chatgpt_api_key.txt', 'r') as f:
+            api_key = f.read().strip()
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {api_key}',
+        }
+
+        json_data = {
+            'model': 'gpt-3.5-turbo',
+            'messages': [
+                {
+                    'role': 'system',
+                    'content': 'You are a helpful assistant that summarizes Telegram channel messages.',
+                },
+                {
+                    'role': 'user',
+                    'content': f'Please provide a concise recap of these Telegram channel messages: {messages}',
+                },
+            ],
+            'temperature': 0.7,
+        }
+
+        response = requests.post('https://api.openai.com/v1/chat/completions', headers=headers, json=json_data)
+        if response.status_code == 200:
+            return response.json()['choices'][0]['message']['content']
+        else:
+            raise Exception(f"API request failed with status code {response.status_code}")

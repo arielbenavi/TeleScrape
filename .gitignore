@@ -1,6 +1,8 @@
 # Sensitive information
-chatgpt_api_key.txt
-rapid_api_key.txt
+client_secret.json
+vetricio_api_key.txt
+telegram_token_id.txt
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
